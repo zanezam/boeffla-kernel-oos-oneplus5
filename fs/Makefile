@@ -130,3 +130,5 @@ obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
 
 # liochen@filesystem, 2016/12/03, Support NTFS and EXFAT in kernel
 obj-$(CONFIG_EXFAT_FS)		+= exfat/
+
+obj-$(CONFIG_DYNAMIC_FSYNC)	+= dyn_sync_cntrl.o
