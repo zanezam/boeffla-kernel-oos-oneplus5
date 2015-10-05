@@ -155,6 +155,9 @@
 #define LRA_POS_FREQ_COUNT		6
 int lra_play_rate_code[LRA_POS_FREQ_COUNT];
 
+int voltage = QPNP_HAP_VMAX_MAX_MV;		// storage for desired voltage
+int level = 25;		// level from 25=max to 0=no vibration
+
 /* haptic debug register set */
 static u8 qpnp_hap_dbg_regs[] = {
 	0x0a, 0x0b, 0x0c, 0x46, 0x48, 0x4c, 0x4d, 0x4e, 0x4f, 0x51, 0x52, 0x53,
@@ -1061,42 +1064,55 @@ static ssize_t qpnp_hap_vmax_show(struct device *dev,
 
 	return snprintf(buf, PAGE_SIZE, "%d\n", hap->vmax_mv);
 }
-static ssize_t qpnp_hap_vmax_store(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
+
+
+void do_vmax_store(struct device *dev, int mV)
 {
-	int data, rc, temp;
+	int rc, temp;
 	u8 reg;
 	struct timed_output_dev *timed_dev = dev_get_drvdata(dev);
 	struct qpnp_hap *hap = container_of(timed_dev, struct qpnp_hap,
 					 timed_dev);
 
-	rc = kstrtoint(buf, 10, &data);
-	if (rc)
-		return rc;
-
-	if (data < QPNP_HAP_VMAX_MIN_MV)
-		data = QPNP_HAP_VMAX_MIN_MV;
-	else if (data > QPNP_HAP_VMAX_MAX_MV)
-		data = QPNP_HAP_VMAX_MAX_MV;
+	if (mV < QPNP_HAP_VMAX_MIN_MV)
+		mV = QPNP_HAP_VMAX_MIN_MV;
+	else if (mV > QPNP_HAP_VMAX_MAX_MV)
+		mV = QPNP_HAP_VMAX_MAX_MV;
+ 
+	// apply custom vibration level factor
+	mV = (mV * level) / 25;
 
 	rc = qpnp_hap_read_reg(hap, &reg, QPNP_HAP_VMAX_REG(hap->base));
 	if (rc < 0)
-		return rc;
+		return;
 
 	reg &= QPNP_HAP_VMAX_MASK;
-	temp = data / QPNP_HAP_VMAX_MIN_MV;
+	temp = mV / QPNP_HAP_VMAX_MIN_MV;
 	reg |= (temp << QPNP_HAP_VMAX_SHIFT);
 
 	rc = qpnp_hap_write_reg(hap, &reg, QPNP_HAP_VMAX_REG(hap->base));
 
 	if (rc)
-		return rc;
+		return;
 
-	hap->vmax_mv = data;
-
-	return count;
+	hap->vmax_mv = mV;
 }
 
+static ssize_t qpnp_hap_vmax_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	int data;
+
+	if (sscanf(buf, "%d", &data) != 1)
+		return -EINVAL;
+
+	// store new voltage into global variable and write configuration
+	voltage = data;
+	do_vmax_store(dev, voltage);
+ 
+	return count;
+}
+ 
 /* sysfs show for wave form update */
 static ssize_t qpnp_hap_wf_update_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -1310,6 +1326,32 @@ static ssize_t qpnp_hap_play_mode_show(struct device *dev,
 	return snprintf(buf, PAGE_SIZE, "%s\n", str);
 }
 
+static ssize_t qpnp_hap_level_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n", level);
+}
+
+static ssize_t qpnp_hap_level_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	u32 data;
+
+	if (sscanf(buf, "%d", &data) != 1)
+		return -EINVAL;
+
+	// ensure level is within range 0..25
+	if ((data < 0) || (data > 25))
+		data = 25;
+
+
+	// store new level into global variable and write configuration
+	level = data;
+	do_vmax_store(dev, voltage);
+
+	return strnlen(buf, count);
+}
+
 /* sysfs store for ramp test data */
 static ssize_t qpnp_hap_min_max_test_data_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
@@ -1429,7 +1471,8 @@ static struct device_attribute qpnp_hap_attrs[] = {
 		qpnp_hap_ramp_test_data_store),
 	__ATTR(min_max_test, 0664, qpnp_hap_min_max_test_data_show,
 		qpnp_hap_min_max_test_data_store),
-};
+	__ATTR(level, (S_IRUGO | S_IWUSR | S_IWGRP), qpnp_hap_level_show, qpnp_hap_level_store),
+	};
 
 static void calculate_lra_code(struct qpnp_hap *hap)
 {
