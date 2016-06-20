@@ -1245,4 +1245,8 @@ config TOUCHSCREEN_ST
 
 source "drivers/input/touchscreen/st/Kconfig"
 
+config BOEFFLA_POWERKEY_HELPER
+	bool "Enable Boeffla Powerkey helper"
+	default n
+
 endif
