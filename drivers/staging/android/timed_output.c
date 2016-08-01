@@ -27,6 +27,13 @@
 
 static struct class *timed_output_class;
 static atomic_t device_count;
+int ignore_next_request = 0;
+
+
+void qpnp_hap_ignore_next_request(void)
+{
+	ignore_next_request = 1;
+}
 
 static ssize_t enable_show(struct device *dev, struct device_attribute *attr,
 			   char *buf)
@@ -48,7 +55,12 @@ static ssize_t enable_store(struct device *dev, struct device_attribute *attr,
 	if (rc != 0)
 		return -EINVAL;
 
-	tdev->enable(tdev, value);
+	// check if a gesture has been detected before, for which we should suppress
+	// the haptic feedback
+	if ((ignore_next_request) && (value != 0))
+		ignore_next_request = 0;
+	else
+		tdev->enable(tdev, value);
 
 	return size;
 }
