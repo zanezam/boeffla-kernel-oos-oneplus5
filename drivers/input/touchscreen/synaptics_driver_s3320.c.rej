@@ -1,0 +1,100 @@
+diff a/drivers/input/touchscreen/synaptics_driver_s3320.c b/drivers/input/touchscreen/synaptics_driver_s3320.c	(rejected hunks)
+@@ -163,6 +167,7 @@ int Down2UpSwip_gesture =0;//"down to up |"
+ 
+ int Wgestrue_gesture =0;//"(W)"
+ int Mgestrue_gesture =0;//"(M)"
++int DisableGestureHaptic = 0;
+ static int gesture_switch = 0;
+ #endif
+ 
+@@ -1583,7 +1614,61 @@ static ssize_t tp_gesture_write_func(struct file *file, const char __user *buffe
+     DouTap_gesture = (buf[0] & BIT7)?1:0; //double tap
+ 
+ 	if(DouTap_gesture||Circle_gesture||UpVee_gesture||LeftVee_gesture\
+-        ||RightVee_gesture||DouSwip_gesture)
++        ||RightVee_gesture||DouSwip_gesture\
++        ||Left2RightSwip_gesture||Right2LeftSwip_gesture||Down2UpSwip_gesture||Up2DownSwip_gesture)
++	{
++		ts->gesture_enable = 1;
++	}
++	else
++    {
++        ts->gesture_enable = 0;
++    }
++	return count;
++}
++
++static ssize_t tp_sweep_wake_implemented_read_func(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
++{
++	int ret = 0;
++	char page[PAGESIZE];
++	ret = sprintf(page, "%d\n", IMPLEMENTED_FUNCTIONS);
++	ret = simple_read_from_buffer(user_buf, count, ppos, page, strlen(page));
++	return ret;
++}
++
++static ssize_t tp_sweep_wake_read_func(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
++{
++	int ret = 0;
++	char page[PAGESIZE];
++	ret = sprintf(page, "%d\n", Left2RightSwip_gesture + (DisableGestureHaptic * BIT1));
++	ret = simple_read_from_buffer(user_buf, count, ppos, page, strlen(page));
++	return ret;
++}
++
++static ssize_t tp_sweep_wake_write_func(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
++{
++	char buf[10];
++	struct synaptics_ts_data *ts = ts_g;
++
++	if(!ts)
++		return count;
++	if( count > 2 || ts->is_suspended)
++		return count;
++	if( copy_from_user(buf, buffer, count) ){
++		TPD_ERR(KERN_INFO "%s: read proc input error.\n", __func__);
++		return count;
++	}
++	TPD_ERR("%s write [0x%x]\n",__func__,buf[0]);
++
++	Left2RightSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
++	Right2LeftSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
++	Up2DownSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
++	Down2UpSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
++
++	DisableGestureHaptic = (buf[0] & BIT1) ? 1 : 0;
++
++	if(DouTap_gesture||Circle_gesture||UpVee_gesture||LeftVee_gesture\
++        ||RightVee_gesture||DouSwip_gesture\
++        ||Left2RightSwip_gesture||Right2LeftSwip_gesture||Down2UpSwip_gesture||Up2DownSwip_gesture)
+ 	{
+ 		ts->gesture_enable = 1;
+ 	}
+@@ -1593,6 +1678,7 @@ static ssize_t tp_gesture_write_func(struct file *file, const char __user *buffe
+     }
+ 	return count;
+ }
++
+ static ssize_t coordinate_proc_read_func(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+ {
+ 	int ret = 0;
+@@ -3071,6 +3170,19 @@ static int init_synaptics_proc(void)
+ 		ret = -ENOMEM;
+ 		TPD_ERR("Couldn't create gesture_enable\n");
+ 	}
++
++	prEntry_sweep_wake_tap = proc_create( "sweep_wake_enable", 0666, prEntry_tp, &tp_sweep_wake_proc_fops);
++	if(prEntry_sweep_wake_tap == NULL){
++		ret = -ENOMEM;
++		printk(KERN_INFO"init_synaptics_proc: Couldn't create proc entry\n");
++	}
++
++	prEntry_sweep_wake_tap_implemented = proc_create( "sweep_wake_enable_implemented", 0666, prEntry_tp, &tp_sweep_wake_implemented_proc_fops);
++	if(prEntry_sweep_wake_tap_implemented == NULL){
++		ret = -ENOMEM;
++		printk(KERN_INFO"init_synaptics_proc: Couldn't create proc entry\n");
++	}
++
+ 	prEntry_tmp = proc_create("coordinate", 0444, prEntry_tp, &coordinate_proc_fops);
+ 	if(prEntry_tmp == NULL){
+ 		ret = -ENOMEM;
