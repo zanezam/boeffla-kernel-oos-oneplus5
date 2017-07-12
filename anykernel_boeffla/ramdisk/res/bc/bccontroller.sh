@@ -671,6 +671,26 @@ if [ "apply_governor_profile" == "$1" ]; then
 		busybox sync
 	fi
 
+	if [ "zzmoove - standard" == "$2" ]; then
+		echo "25" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/afs_threshold1
+		echo "50" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/afs_threshold2
+		echo "75" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/afs_threshold3
+		echo "90" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/afs_threshold4
+		echo "40" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/down_threshold
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/fast_scaling_down
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/fast_scaling_up
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/ignore_nice_load
+		echo "1" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/sampling_down_factor
+		echo "200000" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/sampling_rate
+		echo "200000" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/sampling_rate_min
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/scaling_proportional
+		echo "75" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/smooth_up
+		echo "80" > /sys/devices/system/cpu/cpu0/cpufreq/zzmoove/up_threshold
+
+		busybox sleep 0.5s
+		busybox sync
+	fi
+
 	if [ "blu_active - standard" == "$2" ]; then
 		echo "20000" > /sys/devices/system/cpu/cpu0/cpufreq/blu_active/above_hispeed_delay
 		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/blu_active/align_windows
@@ -813,6 +833,23 @@ if [ "apply_governor_profile_2" == "$1" ]; then
 
 		busybox sleep 0.5s
 		busybox sync
+	fi
+
+	if [ "zzmoove - standard" == "$2" ]; then
+		echo "25" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/afs_threshold1
+		echo "50" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/afs_threshold2
+		echo "75" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/afs_threshold3
+		echo "90" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/afs_threshold4
+		echo "40" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/down_threshold
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/fast_scaling_down
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/fast_scaling_up
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/ignore_nice_load
+		echo "1" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/sampling_down_factor
+		echo "200000" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/sampling_rate
+		echo "200000" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/sampling_rate_min
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/scaling_proportional
+		echo "75" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/smooth_up
+		echo "80" > /sys/devices/system/cpu/cpu4/cpufreq/zzmoove/up_threshold
 	fi
 
 	if [ "blu_active - standard" == "$2" ]; then
