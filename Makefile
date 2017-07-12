@@ -379,7 +379,6 @@ GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv8-a) \
  -g0 \
  -DNDEBUG \
  -fomit-frame-pointer \
- -fmodulo-sched \
  -fmodulo-sched-allow-regmoves \
  -fivopts \
  -Wno-maybe-uninitialized
@@ -406,9 +405,10 @@ KBUILD_CPPFLAGS := -D__KERNEL__
 
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes \
 		   -fno-strict-aliasing -fno-common -Wno-trigraphs -Wno-maybe-uninitialized \
-		   -Werror-implicit-function-declaration -Wno-array-bounds -Wno-bool-compare \
-		   -Wno-format-security -Wno-misleading-indentation \
-		   -std=gnu89 \
+		   -Werror-implicit-function-declaration -Wno-array-bounds -Wno-bool-compare -Wno-parentheses \
+		   -Wno-format-security -Wno-misleading-indentation -Wno-format-truncation -Wno-format-overflow \
+		   -std=gnu89 -Wno-duplicate-decl-specifier -Wno-memset-elt-size -Wno-bool-operation \
+		   -Wno-stringop-overflow -Wno-nonnull -Wno-int-in-bool-context \
 		   $(GEN_OPT_FLAGS)
 KBUILD_AFLAGS_KERNEL := $(GEN_OPT_FLAGS)
 KBUILD_CFLAGS_KERNEL := $(GEN_OPT_FLAGS)
@@ -638,7 +638,7 @@ KBUILD_CFLAGS	+= $(call cc-option,-fno-delete-null-pointer-checks,)
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
 else
-KBUILD_CFLAGS	+= -Ofast
+KBUILD_CFLAGS	+= -Ofast -fno-store-merging
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
