@@ -16672,7 +16672,7 @@ QDF_STATUS csr_get_snr(tpAniSirGlobal pMac,
 {
 	QDF_STATUS status = QDF_STATUS_SUCCESS;
 	cds_msg_t msg;
-	uint32_t sessionId;
+	uint32_t sessionId = 0;
 
 	tAniGetSnrReq *pMsg;
 
