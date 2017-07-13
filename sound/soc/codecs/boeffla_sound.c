@@ -1,7 +1,7 @@
 /*
- * Author: andip71, 03.07.2017
+ * Author: andip71, 13.07.2017
  * 
- * Version 1.0.0
+ * Version 1.1.0
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -17,6 +17,10 @@
 /*
  * Change log:
  * 
+ * 1.1.0 (13.07.2017)
+ *   - Add earpiece volume control
+ *   - Add microphone sensitivity control
+ *
  * 1.0.0 (03.07.2017)
  *   - Initial version for OnePlus 5
  * 
@@ -57,6 +61,10 @@ static void reset_audio_hub(void)
 	// reset all audio hub registers back to defaults
 	set_headphone_gain_l(HEADPHONE_DEFAULT + HEADPHONE_REG_OFFSET);
 	set_headphone_gain_r(HEADPHONE_DEFAULT + HEADPHONE_REG_OFFSET);
+
+	set_earpiece_gain(EARPIECE_DEFAULT + EARPIECE_REG_OFFSET);
+
+	set_mic_gain_call(MICLEVEL_DEFAULT_CALL + MICLEVEL_REG_OFFSET_CALL);
 
 	if (debug)
 		printk("Boeffla-sound: wcd9335 audio hub reset done\n");
@@ -178,6 +186,105 @@ static ssize_t headphone_volume_store(struct device *dev, struct device_attribut
 	return count;
 }
 
+static ssize_t earpiece_volume_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	int val;
+
+	val = get_earpiece_gain() - EARPIECE_REG_OFFSET;	// mono earpiece, so we alwas treat L and R the same
+
+	// convert byte to signed int
+	if (val > 127)
+		val = (256 - val) * -1;
+
+	// print current values
+	return sprintf(buf, "Earpiece volume:\nLeft: %d\nRight: %d\n", val, val);
+}
+
+
+static ssize_t earpiece_volume_store(struct device *dev, struct device_attribute *attr,
+					const char *buf, size_t count)
+{
+	unsigned int ret = -EINVAL;
+	int val;
+	int val_unused;
+
+	// Terminate if boeffla sound is not enabled
+	if (!boeffla_sound)
+		return count;
+
+	// read values from input buffer
+	ret = sscanf(buf, "%d %d", &val, &val_unused);	// mono earpiece, so we only consider first value
+
+	if (ret != 2)
+		return -EINVAL;
+
+	// check whether values are within the valid ranges and adjust accordingly
+	if (val > EARPIECE_MAX)
+		val = EARPIECE_MAX;
+
+	if (val < EARPIECE_MIN)
+		val = EARPIECE_MIN;
+
+	// set new value
+	set_earpiece_gain(val + EARPIECE_REG_OFFSET);
+
+	// print debug info
+	if (debug)
+		printk("Boeffla-sound: earpiece volume L=%d R=%d\n", val, val);
+
+	return count;
+}
+
+
+// Microphone level general
+
+static ssize_t mic_level_call_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	int val;
+
+	val = get_mic_gain_call() - MICLEVEL_REG_OFFSET_CALL;
+
+	// convert byte to signed int
+	if (val > 127)
+		val = (256 - val) * -1;
+
+	return sprintf(buf, "Mic level call %d\n", val);
+}
+
+
+static ssize_t mic_level_call_store(struct device *dev, struct device_attribute *attr,
+					const char *buf, size_t count)
+{
+	unsigned int ret = -EINVAL;
+	int val;
+
+	// Terminate if boeffla sound is not enabled
+	if (!boeffla_sound)
+		return count;
+
+	// read value for mic level from input buffer
+	ret = sscanf(buf, "%d", &val);
+
+	if (ret != 1)
+		return -EINVAL;
+
+	// check whether values are within the valid ranges and adjust accordingly
+	if (val > MICLEVEL_MAX_CALL)
+		val = MICLEVEL_MAX_CALL;
+
+	if (val < MICLEVEL_MIN_CALL)
+		val = MICLEVEL_MIN_CALL;
+
+	// set new value
+	set_mic_gain_call(val + MICLEVEL_REG_OFFSET_CALL);
+
+	// print debug info
+	if (debug)
+		printk("Boeffla-sound: Mic level call %d\n", val);
+
+	return count;
+}
+
 
 // Debug status
 
@@ -211,9 +318,11 @@ static ssize_t debug_store(struct device *dev, struct device_attribute *attr,
 static ssize_t reg_dump_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	// return register dump information
-	return sprintf(buf, "headphone_gain_l: %d\nheadphone_gain_r: %d\n", 
+	return sprintf(buf, "headphone_gain_l: %d\nheadphone_gain_r: %d\nearpiece_gain: %d\nmic_gain: %d\n", 
 			get_headphone_gain_l(), 
-			get_headphone_gain_r());
+			get_headphone_gain_r(),
+			get_earpiece_gain(),
+			get_mic_gain_call());
 }
 
 
@@ -262,6 +371,8 @@ unsigned int boeffla_sound_write_hook(unsigned int reg, unsigned int val)
 // define objects
 static DEVICE_ATTR(boeffla_sound, 0664, boeffla_sound_show, boeffla_sound_store);
 static DEVICE_ATTR(headphone_volume, 0664, headphone_volume_show, headphone_volume_store);
+static DEVICE_ATTR(earpiece_volume, 0664, earpiece_volume_show, earpiece_volume_store);
+static DEVICE_ATTR(mic_level_call, 0664, mic_level_call_show, mic_level_call_store);
 static DEVICE_ATTR(debug, 0664, debug_show, debug_store);
 static DEVICE_ATTR(version, 0664, version_show, NULL);
 static DEVICE_ATTR(reg_dump, 0664, reg_dump_show, NULL);
@@ -270,6 +381,8 @@ static DEVICE_ATTR(reg_dump, 0664, reg_dump_show, NULL);
 static struct attribute *boeffla_sound_attributes[] = {
 	&dev_attr_boeffla_sound.attr,
 	&dev_attr_headphone_volume.attr,
+	&dev_attr_earpiece_volume.attr,
+	&dev_attr_mic_level_call.attr,
 	&dev_attr_debug.attr,
 	&dev_attr_version.attr,
 	&dev_attr_reg_dump.attr,
