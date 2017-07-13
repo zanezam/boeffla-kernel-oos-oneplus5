@@ -338,9 +338,11 @@ if [ "param_boeffla_sound" == "$1" ]; then
 	# Equalizer min/max
 	echo "-12;12;"
 	# Microphone gain min/max
-	echo "-10;20;"
+	echo "-20;30;"
 	# Stereo expansion min/max
-	echo "0;31"
+	echo "0;31;"
+	# Earpiece min/max
+	echo "-10;20"
 	exit 0
 fi
 
