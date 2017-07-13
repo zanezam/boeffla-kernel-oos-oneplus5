@@ -33,6 +33,12 @@ int get_headphone_gain_r(void);
 void set_headphone_gain_l(int gain);
 void set_headphone_gain_r(int gain);
 
+int get_mic_gain_call(void);
+void set_mic_gain_call(int gain);
+
+int get_earpiece_gain(void);
+void set_earpiece_gain(int gain);
+
 
 /*****************************************/
 // Definitions
@@ -40,7 +46,7 @@ void set_headphone_gain_r(int gain);
 
 // Boeffla sound general
 #define BOEFFLA_SOUND_DEFAULT 	0
-#define BOEFFLA_SOUND_VERSION 	"1.0.0"
+#define BOEFFLA_SOUND_VERSION 	"1.1.0"
 #define DEBUG_DEFAULT 			0
 
 // headphone levels
@@ -49,4 +55,15 @@ void set_headphone_gain_r(int gain);
 #define HEADPHONE_MIN 			-30
 #define HEADPHONE_MAX 			30
 
+// earpiece levels
+#define EARPIECE_DEFAULT		0
+#define EARPIECE_REG_OFFSET		0
+#define EARPIECE_MIN 			-10
+#define EARPIECE_MAX 			20
+
+// Microphone control
+#define MICLEVEL_DEFAULT_CALL		0
+#define MICLEVEL_REG_OFFSET_CALL	12
+#define MICLEVEL_MIN_CALL			-20
+#define MICLEVEL_MAX_CALL			30
 
