@@ -13730,6 +13730,26 @@ void set_headphone_gain_r(int gain)
 	snd_soc_write_nohook(codec_ptr, WCD9335_CDC_RX2_RX_VOL_MIX_CTL, gain);
 	snd_soc_write_nohook(codec_ptr, WCD9335_CDC_RX2_RX_VOL_CTL, gain);
 }
+
+int get_earpiece_gain()
+{
+	return snd_soc_read(codec_ptr, WCD9335_CDC_RX0_RX_VOL_CTL);
+}
+
+void set_earpiece_gain(int gain)
+{
+	snd_soc_write_nohook(codec_ptr, WCD9335_CDC_RX0_RX_VOL_CTL, gain);
+}
+
+void set_mic_gain_call(int gain)
+{
+	snd_soc_write_nohook(codec_ptr,  WCD9335_CDC_TX6_TX_VOL_CTL, gain);
+}
+
+int get_mic_gain_call()
+{
+	return snd_soc_read(codec_ptr,  WCD9335_CDC_TX6_TX_VOL_CTL);
+}
 #endif
 
 static int tasha_codec_probe(struct snd_soc_codec *codec)
