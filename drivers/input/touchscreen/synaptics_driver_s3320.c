@@ -49,6 +49,10 @@
 
 #include <linux/boeffla_powerkey_helper.h>
 
+#ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
+#include <linux/boeffla_touchkey_control.h>
+#endif
+
 #ifdef CONFIG_FB
 #include <linux/fb.h>
 #include <linux/notifier.h>
@@ -1486,6 +1490,9 @@ void int_touch(void)
 			points.y = 1919 - points.y;
 		}
 		if (finger_status) {
+#ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
+			btkc_touch_start();
+#endif
 			input_mt_slot(ts->input_dev, i);
 			input_mt_report_slot_state(ts->input_dev,
 			MT_TOOL_FINGER, finger_status);
@@ -1534,6 +1541,9 @@ void int_touch(void)
 	last_status = current_status & 0x02;
 
 	if (finger_num == 0/* && last_status && (check_key <= 1)*/) {
+#ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
+		btkc_touch_stop();
+#endif
 		if (3 == (++prlog_count % 6))
 			TPD_ERR("all finger up\n");
 		input_report_key(ts->input_dev, BTN_TOOL_FINGER, 0);
@@ -1589,6 +1599,9 @@ static void int_key_report_s3508(struct synaptics_ts_data *ts)
 	&& !key_back_disable && !s3320_stop_buttons) {
 		input_report_key(ts->input_dev, OEM_KEY_BACK, 1);
 		input_sync(ts->input_dev);
+#ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
+		btkc_touch_button();
+#endif
 	} else if (!(button_key & 0x01) && (ts->pre_btn_state & 0x01)
 	&& !key_back_disable){
 		input_report_key(ts->input_dev, OEM_KEY_BACK, 0);
@@ -1599,6 +1612,9 @@ static void int_key_report_s3508(struct synaptics_ts_data *ts)
 	&& !key_appselect_disable && !s3320_stop_buttons) {
 		input_report_key(ts->input_dev, OEM_KEY_APPSELECT, 1);
 		input_sync(ts->input_dev);
+#ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
+		btkc_touch_button();
+#endif
 	} else if (!(button_key & 0x02) && (ts->pre_btn_state & 0x02)
 	&& !key_appselect_disable) {
 		input_report_key(ts->input_dev, OEM_KEY_APPSELECT, 0);
