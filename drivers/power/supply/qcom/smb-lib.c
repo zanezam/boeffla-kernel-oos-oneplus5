@@ -51,6 +51,10 @@
 struct smb_charger *g_chg;
 struct qpnp_pon *pm_pon;
 
+#ifdef CONFIG_CHARGE_LEVEL
+struct smb_charger *chg_cache;
+#endif
+
 static struct external_battery_gauge *fast_charger = NULL;
 static int op_charging_en(struct smb_charger *chg, bool en);
 bool op_set_fast_chg_allow(struct smb_charger *chg, bool enable);
@@ -6774,9 +6778,40 @@ static void smblib_iio_deinit(struct smb_charger *chg)
 		iio_channel_release(chg->iio.batt_i_chan);
 }
 
+#ifdef CONFIG_CHARGE_LEVEL
+int get_bk_current_now (void)
+{
+	int curr;
+
+	// get current and convert to mA (positive = charging, negative = discharging)
+	curr = (get_prop_batt_current_now(chg_cache) / 1000) * -1;
+
+	// we are only interested in charging value, set it to 0 otherwise
+	if (curr < 0)
+		curr = 0;
+
+	return curr;
+}
+
+int get_bk_charger_type (void)
+{
+	return chg_cache->usb_psy_desc.type;
+}
+
+bool get_bk_fast_charge (void)
+{
+	return get_prop_fast_chg_started(chg_cache);
+}
+#endif
+
 int smblib_init(struct smb_charger *chg)
 {
 	int rc = 0;
+
+#ifdef CONFIG_CHARGE_LEVEL
+	// store pointer to smb_charger struct in cache
+	chg_cache = chg;
+#endif
 
 	mutex_init(&chg->lock);
 	mutex_init(&chg->write_lock);

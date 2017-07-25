@@ -520,6 +520,12 @@ config AXP20X_POWER
 	  This driver provides support for the power supply features of
 	  AXP20x PMIC.
 
+config CHARGE_LEVEL
+       bool "Charge level interface"
+       default y
+       help
+         Boeffla charge level monitoring and control interface (OP5 version)
+
 source "drivers/power/reset/Kconfig"
 source "drivers/power/supply/Kconfig"
 
