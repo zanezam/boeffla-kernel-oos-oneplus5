@@ -1,7 +1,7 @@
 /*
- * Author: andip71, 13.07.2017
+ * Author: andip71, 29.07.2017
  * 
- * Version 1.1.0
+ * Version 1.1.1
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -16,6 +16,9 @@
 
 /*
  * Change log:
+ * 
+ * 1.1.1 (29.07.2017)
+ *   - Fix headphone volume reset issue
  * 
  * 1.1.0 (13.07.2017)
  *   - Add earpiece volume control
@@ -349,20 +352,36 @@ unsigned int boeffla_sound_write_hook(unsigned int reg, unsigned int val)
 	{
 		// headphone l
 		case WCD9335_CDC_RX1_RX_VOL_CTL:
-		{
+		case WCD9335_CDC_RX1_RX_VOL_MIX_CTL:
 			val = headphone_volume_l + HEADPHONE_REG_OFFSET;
-		}
+			break;
 
 		// headphone r
 		case WCD9335_CDC_RX2_RX_VOL_CTL:
-		{
+		case WCD9335_CDC_RX2_RX_VOL_MIX_CTL:
 			val = headphone_volume_r + HEADPHONE_REG_OFFSET;
-		}
+			break;
 	}
 
 	return val;
 }
 
+
+bool boeffla_sound_block_update_bits_hook(unsigned int reg)
+{
+	// based on the register, check if we should block the update
+	switch (reg)
+	{
+		case WCD9335_CDC_RX1_RX_VOL_CTL:
+		case WCD9335_CDC_RX1_RX_VOL_MIX_CTL:
+		case WCD9335_CDC_RX2_RX_VOL_CTL:
+		case WCD9335_CDC_RX2_RX_VOL_MIX_CTL:
+			return true;
+			break;
+	}
+
+	return false;
+}
 
 /*****************************************/
 // Initialize boeffla sound sysfs folder
