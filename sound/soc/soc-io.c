@@ -19,6 +19,7 @@
 
 #ifdef CONFIG_BOEFFLA_SOUND
 	int boeffla_sound_write_hook(unsigned int reg, unsigned int val);
+	bool boeffla_sound_block_update_bits_hook(unsigned int reg);
 #endif
 
 /**
@@ -243,6 +244,12 @@ EXPORT_SYMBOL_GPL(snd_soc_write_nohook);
 int snd_soc_update_bits(struct snd_soc_codec *codec, unsigned int reg,
 				unsigned int mask, unsigned int value)
 {
+#ifdef CONFIG_BOEFFLA_SOUND
+	// check if we should block updating this register
+	if (boeffla_sound_block_update_bits_hook(reg))
+		return 0;
+#endif
+
 	return snd_soc_component_update_bits(&codec->component, reg, mask,
 		value);
 }
