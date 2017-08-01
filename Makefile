@@ -381,7 +381,8 @@ GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv8-a) \
  -fomit-frame-pointer \
  -fmodulo-sched \
  -fmodulo-sched-allow-regmoves \
- -fivopts
+ -fivopts \
+ -Wno-maybe-uninitialized
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE    := \
@@ -403,13 +404,12 @@ LINUXINCLUDE    := \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-		   -fno-strict-aliasing -fno-common \
-		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
+KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes \
+		   -fno-strict-aliasing -fno-common -Wno-trigraphs -Wno-maybe-uninitialized \
+		   -Werror-implicit-function-declaration -Wno-array-bounds -Wno-bool-compare \
+		   -Wno-format-security -Wno-misleading-indentation \
 		   -std=gnu89 \
 		   $(GEN_OPT_FLAGS)
-
 KBUILD_AFLAGS_KERNEL := $(GEN_OPT_FLAGS)
 KBUILD_CFLAGS_KERNEL := $(GEN_OPT_FLAGS)
 KBUILD_AFLAGS   := -D__ASSEMBLY__
