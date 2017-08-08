@@ -710,6 +710,42 @@ if [ "apply_governor_profile" == "$1" ]; then
 		busybox sync
 	fi
 
+	if [ "impulse - standard" == "$2" ]; then
+		echo "20000" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/above_hispeed_delay
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/align_windows
+		echo "99" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/go_hispeed_load
+		echo "1555200" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/hispeed_freq
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/io_is_busy
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/max_freq_hysteresis
+		echo "80000" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/min_sample_time
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/powersave_bias
+		echo "90" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/target_loads
+		echo "20000" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/timer_rate
+		echo "80000" > /sys/devices/system/cpu/cpu0/cpufreq/impulse/timer_slack
+
+		busybox sleep 0.5s
+		busybox sync
+	fi
+
+	if [ "cultivation - standard" == "$2" ]; then
+		echo "20000" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/above_hispeed_delay
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/align_windows
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/fastlane
+		echo "50" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/fastlane_threshold
+		echo "99" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/go_hispeed_load
+		echo "1555200" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/hispeed_freq
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/io_is_busy
+		echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/max_freq_hysteresis
+		echo "80000" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/min_sample_time
+		echo "90" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/target_loads
+		echo "20000" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/timer_rate
+		echo "50000" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/timer_rate_screenoff
+		echo "80000" > /sys/devices/system/cpu/cpu0/cpufreq/cultivation/timer_slack
+
+		busybox sleep 0.5s
+		busybox sync
+	fi
+
 	exit 0
 fi
 
@@ -866,6 +902,42 @@ if [ "apply_governor_profile_2" == "$1" ]; then
 		echo "90" > /sys/devices/system/cpu/cpu4/cpufreq/blu_active/target_loads
 		echo "20000" > /sys/devices/system/cpu/cpu4/cpufreq/blu_active/timer_rate
 		echo "80000" > /sys/devices/system/cpu/cpu4/cpufreq/blu_active/timer_slack
+
+		busybox sleep 0.5s
+		busybox sync
+	fi
+
+	if [ "impulse - standard" == "$2" ]; then
+		echo "20000" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/above_hispeed_delay
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/align_windows
+		echo "99" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/go_hispeed_load
+		echo "1958400" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/hispeed_freq
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/io_is_busy
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/max_freq_hysteresis
+		echo "80000" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/min_sample_time
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/powersave_bias
+		echo "90" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/target_loads
+		echo "20000" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/timer_rate
+		echo "80000" > /sys/devices/system/cpu/cpu4/cpufreq/impulse/timer_slack
+
+		busybox sleep 0.5s
+		busybox sync
+	fi
+
+	if [ "cultivation - standard" == "$2" ]; then
+		echo "20000" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/above_hispeed_delay
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/align_windows
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/fastlane
+		echo "50" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/fastlane_threshold
+		echo "99" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/go_hispeed_load
+		echo "1958400" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/hispeed_freq
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/io_is_busy
+		echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/max_freq_hysteresis
+		echo "80000" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/min_sample_time
+		echo "90" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/target_loads
+		echo "20000" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/timer_rate
+		echo "50000" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/timer_rate_screenoff
+		echo "80000" > /sys/devices/system/cpu/cpu4/cpufreq/cultivation/timer_slack
 
 		busybox sleep 0.5s
 		busybox sync
