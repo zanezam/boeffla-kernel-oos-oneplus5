@@ -21,7 +21,7 @@ endif
 
 KBUILD_DEFCONFIG := defconfig
 
-ARM_ARCH_OPT := -mcpu=cortex-a57 -mtune=cortex-a57
+ARM_ARCH_OPT := -mcpu=cortex-a73 -mtune=cortex-a73
 GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv8-a,-mpc-relative-literal-loads) \
  -g0 \
  -DNDEBUG \
