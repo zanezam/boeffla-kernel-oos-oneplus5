@@ -408,7 +408,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes \
 		   -Werror-implicit-function-declaration -Wno-array-bounds -Wno-bool-compare -Wno-parentheses \
 		   -Wno-format-security -Wno-misleading-indentation -Wno-format-truncation -Wno-format-overflow \
 		   -std=gnu89 -Wno-duplicate-decl-specifier -Wno-memset-elt-size -Wno-bool-operation \
-		   -Wno-stringop-overflow -Wno-nonnull -Wno-int-in-bool-context \
+		   -Wno-stringop-overflow -Wno-nonnull -Wno-int-in-bool-context -Wno-attributes -Wno-packed-not-aligned \
+		   -Wno-error=sizeof-pointer-div -Wno-sizeof-pointer-div \
 		   $(GEN_OPT_FLAGS)
 KBUILD_AFLAGS_KERNEL := $(GEN_OPT_FLAGS)
 KBUILD_CFLAGS_KERNEL := $(GEN_OPT_FLAGS)
