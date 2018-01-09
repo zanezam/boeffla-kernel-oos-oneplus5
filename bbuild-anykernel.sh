@@ -228,9 +228,8 @@ step4_prepare_anykernel()
 
 		# copy static modules and rename from ko_ to ko, only if there are some
 		if [ "$(ls -A $BUILD_PATH/modules_boeffla)" ]; then
-			cp $BUILD_PATH/modules_boeffla/* $MODULES_PATH
-			cd $MODULES_PATH
-			for i in *.ko_; do mv $i ${i%ko_}ko; echo Static module: ${i%ko_}ko; done
+			cd $BUILD_PATH/modules_boeffla
+			for i in *.ko_; do cp $i $MODULES_PATH/${i%ko_}ko; echo Static module: ${i%ko_}ko; done
 		fi
 
 		# set module permissions
@@ -239,6 +238,11 @@ step4_prepare_anykernel()
 		# strip modules
 		echo -e ">>> strip modules\n"
 		${TOOLCHAIN}strip --strip-unneeded $MODULES_PATH/*
+
+		# if required, do post-module handling
+		if [ -f $SOURCE_PATH/bpost-module.sh ]; then
+			. $SOURCE_PATH/bpost-module.sh $MODULES_PATH
+		fi
 
 	} 2>/dev/null
 
