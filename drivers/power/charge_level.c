@@ -1,7 +1,7 @@
 /*
- * Author: andip71, 25.07.2017
+ * Author: andip71, 10.01.2018
  *
- * Version 1.0
+ * Version 1.1
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -31,6 +31,7 @@ bool get_bk_fast_charge (void);
 static ssize_t charge_info_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
 {
 	char charge_info_text[30];
+	int charger_type;
 
 	// check if dash charging active
 	if (get_bk_fast_charge())
@@ -39,10 +40,14 @@ static ssize_t charge_info_show(struct kobject *kobj, struct kobj_attribute *att
 	}
 	else
 	{
+		// get charger type
+		charger_type = get_bk_charger_type();
+
 		// check connected charger type
-		switch (get_bk_charger_type())
+		switch (charger_type)
 		{
 			case POWER_SUPPLY_TYPE_UNKNOWN:
+			case POWER_SUPPLY_TYPE_USB_PD:
 				sprintf(charge_info_text, "No charger");
 				break;
 
@@ -55,7 +60,7 @@ static ssize_t charge_info_show(struct kobject *kobj, struct kobj_attribute *att
 				break;
 
 			default:
-				sprintf(charge_info_text, "~%d mA (unknown charger)", get_bk_current_now());
+				sprintf(charge_info_text, "~%d mA (unknown charger: %d)", get_bk_current_now(), charger_type);
 				break;
 		}
 	}
