@@ -89,6 +89,7 @@
 bool backlight_dimmer = false;
 module_param(backlight_dimmer, bool, 0755);
 
+#define BL_FACTOR	4
 int backlight_min = 0;
 int backlight_max = 255;
 
@@ -291,6 +292,7 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 {
 	struct msm_fb_data_type *mfd = dev_get_drvdata(led_cdev->dev->parent);
 	int bl_lvl;
+	int calc_min, calc_max;
 
 	if (mfd->boot_notification_led) {
 		led_trigger_event(mfd->boot_notification_led, 0);
@@ -300,16 +302,24 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 	if (value > mfd->panel_info->brightness_max)
 		value = mfd->panel_info->brightness_max;
 
-	// Boeffla: apply min/max limits for LCD backlight (0 is exception for display off)
+	// Boeffla: apply min/max limits for LCD backlight
+	calc_min = backlight_min * BL_FACTOR;
+	calc_max = backlight_max * BL_FACTOR;	
+	
+	// (0 is exception for display off)
 	if (value != 0)
 	{
-		if (value < backlight_min)
-			value = backlight_min;
+		if (value < calc_min)
+			value = calc_min;
 
-		if (value > backlight_max)
-			value = backlight_max;
+		if (backlight_max != 255)	// 255 always allows max brightness for safety reasons
+		{
+			if (value > calc_max)
+				value = calc_max;
+		}
 	}
 
+	
 	if (backlight_dimmer) {
 		MDSS_BRIGHT_TO_BL_DIM(bl_lvl, value);
 	} else {
