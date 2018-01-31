@@ -152,6 +152,9 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
 	rm -rf $root/system/lib/modules/*;
 	cp -rf /tmp/anykernel/modules/* $root/system/lib/modules/;
 	set_perm_recursive 0 0 0755 0644 $root/system/lib/modules;
+	if [ -e /tmp/anykernel/postmodules.sh ]; then
+		. /tmp/anykernel/postmodules.sh
+	fi;
 	mount -o remount,ro -t auto /system;
 fi;
 
