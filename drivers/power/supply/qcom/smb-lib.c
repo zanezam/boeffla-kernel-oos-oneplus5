@@ -7281,11 +7281,6 @@ int get_bk_charger_type (void)
 {
 	return chg_cache->usb_psy_desc.type;
 }
-
-bool get_bk_fast_charge (void)
-{
-	return get_prop_fast_chg_started(chg_cache);
-}
 #endif
 
 int smblib_init(struct smb_charger *chg)

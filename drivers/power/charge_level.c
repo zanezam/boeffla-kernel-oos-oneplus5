@@ -24,7 +24,6 @@
 /* imported function prototypes */
 int get_bk_current_now (void);
 int get_bk_charger_type (void);
-bool get_bk_fast_charge (void);
 
 
 /* sysfs interface */
@@ -33,36 +32,32 @@ static ssize_t charge_info_show(struct kobject *kobj, struct kobj_attribute *att
 	char charge_info_text[30];
 	int charger_type;
 
-	// check if dash charging active
-	if (get_bk_fast_charge())
+	// get charger type
+	charger_type = get_bk_charger_type();
+
+	// check connected charger type
+	switch (charger_type)
 	{
-		sprintf(charge_info_text, "~%d mA (Dash charging)", get_bk_current_now());
-	}
-	else
-	{
-		// get charger type
-		charger_type = get_bk_charger_type();
+		case POWER_SUPPLY_TYPE_UNKNOWN:
+		case POWER_SUPPLY_TYPE_USB_PD:
+			sprintf(charge_info_text, "No charger");
+			break;
 
-		// check connected charger type
-		switch (charger_type)
-		{
-			case POWER_SUPPLY_TYPE_UNKNOWN:
-			case POWER_SUPPLY_TYPE_USB_PD:
-				sprintf(charge_info_text, "No charger");
-				break;
+		case POWER_SUPPLY_TYPE_USB_DCP:
+			sprintf(charge_info_text, "~%d mA (AC charger)", get_bk_current_now());
+			break;
 
-			case POWER_SUPPLY_TYPE_USB_DCP:
-				sprintf(charge_info_text, "~%d mA (AC charger)", get_bk_current_now());
-				break;
+		case POWER_SUPPLY_TYPE_USB:
+			sprintf(charge_info_text, "~%d mA (USB charger)", get_bk_current_now());
+			break;
 
-			case POWER_SUPPLY_TYPE_USB:
-				sprintf(charge_info_text, "~%d mA (USB charger)", get_bk_current_now());
-				break;
+		case POWER_SUPPLY_TYPE_DASH:
+			sprintf(charge_info_text, "~%d mA (Dash charging)", get_bk_current_now());
+			break;
 
-			default:
-				sprintf(charge_info_text, "~%d mA (unknown charger: %d)", get_bk_current_now(), charger_type);
-				break;
-		}
+		default:
+			sprintf(charge_info_text, "~%d mA (unknown charger: %d)", get_bk_current_now(), charger_type);
+			break;
 	}
 
 	// return info text
