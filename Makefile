@@ -383,12 +383,19 @@ GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv8-a) \
  -g0 \
  -DNDEBUG \
  -fomit-frame-pointer \
- -fmodulo-sched \
- -fmodulo-sched-allow-regmoves \
  -fivopts \
  -Wno-array-bounds \
  -Wno-bool-compare \
- -Wno-misleading-indentation
+ -Wno-misleading-indentation \
+ -Wno-format-truncation \
+ -Wno-duplicate-decl-specifier \
+ -Wno-bool-operation \
+ -Wno-memset-elt-size \
+ -Wno-format-overflow \
+ -Wno-nonnull \
+ -Wno-parentheses \
+ -Wno-stringop-overflow \
+ -Wno-int-in-bool-context
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE    := \
@@ -654,9 +661,9 @@ ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
 ifdef CONFIG_PROFILE_ALL_BRANCHES
-KBUILD_CFLAGS	+= -Ofast
+KBUILD_CFLAGS	+= -Ofast -fno-store-merging
 else
-KBUILD_CFLAGS   += -Ofast
+KBUILD_CFLAGS   += -Ofast -fno-store-merging
 endif
 endif
 
