@@ -395,7 +395,11 @@ GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv8-a) \
  -Wno-nonnull \
  -Wno-parentheses \
  -Wno-stringop-overflow \
- -Wno-int-in-bool-context
+ -Wno-int-in-bool-context \
+ -Wno-attributes \
+ -Wno-packed-not-aligned \
+ -Wno-error=sizeof-pointer-div \
+ -Wno-sizeof-pointer-div
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE    := \
