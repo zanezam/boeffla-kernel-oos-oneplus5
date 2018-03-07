@@ -1,5 +1,12 @@
 #!/system/bin/sh
 
+# rename busybox if not yet done
+if [ -e /sbin/bb ]; then
+	mount -o remount,rw /
+	mv /sbin/bb /sbin/busybox
+	mount -o remount,ro /
+fi
+
 # this script corrects selinux context of Boeffla-specific files
 
 # root fs
