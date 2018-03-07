@@ -46,7 +46,7 @@ dump_boot;
 
 # AnyKernel permissions
 chmod 775 $ramdisk/sbin
-chmod 755 $ramdisk/sbin/busybox
+chmod 755 $ramdisk/sbin/bb
 chmod 755 $ramdisk/sbin/e2fsck
 
 chmod 775 $ramdisk/res
@@ -54,7 +54,7 @@ chmod -R 755 $ramdisk/res/bc
 chmod -R 755 $ramdisk/res/misc
 
 # ramdisk changes
-# ... none ...
+rm 755 $ramdisk/sbin/busybox
 
 ############### Ramdisk customization end ###############
 
