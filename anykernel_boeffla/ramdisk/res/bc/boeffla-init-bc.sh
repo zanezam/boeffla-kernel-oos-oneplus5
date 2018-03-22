@@ -69,13 +69,6 @@
 	echo 1024 > /sys/block/sda/queue/read_ahead_kb
 	/sbin/busybox sync
 
-	# Ext4 tweaks default to on
-	/sbin/busybox sync
-	/sbin/busybox mount -o remount,commit=20,noatime $CACHE_DEVICE /cache
-	/sbin/busybox sync
-	/sbin/busybox mount -o remount,commit=20,noatime $DATA_DEVICE /data
-	/sbin/busybox sync
-
 	echo $(date) Boeffla-Kernel default settings applied >> $BOEFFLA_LOGFILE
 
 # init.d support (enabler only to be considered for CM based roms)
@@ -136,11 +129,7 @@
 		. $BOEFFLA_STARTCONFIG
 		echo $(date) Startup configuration applied  >> $BOEFFLA_LOGFILE
 	else
-		# dynamic fsync to on
-		echo 1 > /sys/kernel/dyn_fsync/Dyn_fsync_active
-		/sbin/busybox sync
-
-		echo $(date) "No startup configuration found, enable all default settings"  >> $BOEFFLA_LOGFILE
+		echo $(date) "No startup configuration found"  >> $BOEFFLA_LOGFILE
 	fi
 
 # Turn off debugging for certain modules
