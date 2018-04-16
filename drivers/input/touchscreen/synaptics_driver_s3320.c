@@ -177,7 +177,6 @@ int Mgestrue_gesture;/* M */
 int Sgestrue_gesture;/* S */
 int DisableGestureHaptic = 0;
 static int gesture_switch;
-/*ruanbanmao@BSP add for tp gesture 2015-05-06 */
 #endif
 
 /*********************for Debug LOG switch*******************/
