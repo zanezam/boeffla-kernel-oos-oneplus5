@@ -184,7 +184,6 @@ int Sgestrue_gesture;/* S */
 int DisableGestureHaptic = 0;
 bool s3320_stop_buttons;
 static int gesture_switch;
-/*ruanbanmao@BSP add for tp gesture 2015-05-06 */
 #endif
 
 // module parameter
