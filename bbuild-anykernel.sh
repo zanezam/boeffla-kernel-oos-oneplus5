@@ -2,7 +2,7 @@
 
 # Boeffla Kernel Universal Build Script
 #
-# Version 1.3, 11.10.2016
+# Version 1.4, 06.07.2018
 #
 # (C) Lord Boeffla (aka andip71)
 
@@ -21,7 +21,6 @@ KERNEL_IMAGE="Image.gz-dtb"
 COMPILE_DTB="n"
 DTBTOOL=""
 DTBTOOL_CMD=""
-MODULES_IN_SYSTEM="y"
 OUTPUT_FOLDER=""
 
 DEFCONFIG="boeffla_defconfig"
@@ -229,13 +228,8 @@ step4_prepare_anykernel()
 			cp $BUILD_PATH/$OUTPUT_FOLDER/arch/$ARCHITECTURE/boot/dt.img $REPACK_PATH/dtb
 		fi
 
-		# copy modules to either modules folder (CM and derivates) or directly in ramdisk (Samsung stock)
-		if [ "y" == "$MODULES_IN_SYSTEM" ]; then
-			MODULES_PATH=$REPACK_PATH/modules
-		else
-			MODULES_PATH=$REPACK_PATH/ramdisk/lib/modules
-		fi
-
+		# copy modules to modules folder
+		MODULES_PATH=$REPACK_PATH/modules/system/lib/modules
 		mkdir -p $MODULES_PATH
 
 		# copy generated modules
@@ -263,10 +257,9 @@ step4_prepare_anykernel()
 
 	# replace variables in anykernel script
 	cd $REPACK_PATH
-	KERNELNAME="Flashing $KERNEL_NAME $BOEFFLA_VERSION"
-	sed -i "s;###kernelname###;${KERNELNAME};" META-INF/com/google/android/update-binary;
+	KERNELINFO="$KERNEL_NAME $BOEFFLA_VERSION"
 	COPYRIGHT="(c) Lord Boeffla (aka andip71), $(date +%Y.%m.%d-%H:%M:%S)"
-	sed -i "s;###copyright###;${COPYRIGHT};" META-INF/com/google/android/update-binary;
+	sed -i "s;###kernelname###;${KERNELINFO} - ${COPYRIGHT};" anykernel.sh;
 }
 
 step5_create_anykernel_zip()
