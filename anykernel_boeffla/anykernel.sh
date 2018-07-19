@@ -7,6 +7,7 @@ properties() { '
 kernel.string=###kernelname###
 do.devicecheck=1
 do.modules=1
+do.system=1
 do.cleanup=1
 do.cleanuponabort=0
 device.name1=cheeseburger
