@@ -1,7 +1,7 @@
 /*
- * Author: andip71, 10.01.2018
+ * Author: andip71, 07.08.2018
  *
- * Version 1.1
+ * Version 1.3
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -19,6 +19,9 @@
 #include <linux/kobject.h>
 #include <linux/sysfs.h>
 #include <linux/power_supply.h>
+
+/* variables */
+extern int bc_enable_usb_fastcharge;
 
 
 /* imported function prototypes */
@@ -65,13 +68,44 @@ static ssize_t charge_info_show(struct kobject *kobj, struct kobj_attribute *att
 }
 
 
+static ssize_t enable_usb_fastcharge_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
+{
+	// return setting
+	return sprintf(buf, "%d", bc_enable_usb_fastcharge);
+}
+
+
+static ssize_t enable_usb_fastcharge_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count)
+{
+	unsigned int ret = -EINVAL;
+	int val;
+
+	// read value from input buffer
+	ret = sscanf(buf, "%d", &val);
+
+	if (ret != 1)
+		return -EINVAL;
+
+	// value of 1 enables usb fast charging; everything else disables it
+	if (val == 1)
+		bc_enable_usb_fastcharge = 1;
+	else
+		bc_enable_usb_fastcharge = 0;
+
+	return count;
+}
+
 /* Initialize charge level sysfs folder */
 
 static struct kobj_attribute charge_info_attribute =
 __ATTR(charge_info, 0664, charge_info_show, NULL);
 
+static struct kobj_attribute enable_usb_fastcharge_attribute =
+__ATTR(enable_usb_fastcharge, 0664, enable_usb_fastcharge_show, enable_usb_fastcharge_store);
+
 static struct attribute *charge_level_attrs[] = {
 &charge_info_attribute.attr,
+&enable_usb_fastcharge_attribute.attr,
 NULL,
 };
 

@@ -82,6 +82,7 @@ static int get_prop_fg_current_now(struct smb_charger *chg);
 static int get_prop_fg_voltage_now(struct smb_charger *chg);
 static void op_check_charger_collapse(struct smb_charger *chg);
 static int op_set_collapse_fet(struct smb_charger *chg, bool on);
+int bc_enable_usb_fastcharge = 1;
 
 #define smblib_err(chg, fmt, ...)		\
 	pr_err("%s: %s: " fmt, chg->name,	\
@@ -881,8 +882,8 @@ static int set_sdp_current(struct smb_charger *chg, int icl_ua)
 	u8 icl_options;
 	const struct apsd_result *apsd_result = smblib_get_apsd_result(chg);
 
-	// AP: Fast charge for USB
-	if (icl_ua == USBIN_500MA)
+	// AP: Fast charge for USB, only if enabled
+	if ((icl_ua == USBIN_500MA) && (bc_enable_usb_fastcharge == 1))
 	{
 		icl_ua = USBIN_900MA;
 		pr_info("Boeffla-Kernel: Trigger USB fast charge with 900mA\n");
